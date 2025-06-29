@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multiplayer Wordle</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🟩 Multiplayer Wordle 🟨</h1>
+  <p id="gameInfo">Connecting...</p>
+  <div id="board"></div>
+  <input type="text" id="guessInput" maxlength="5" placeholder="Enter guess" />
+  <button onclick="submitGuess()">Submit</button>
+  <p id="status"></p>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <script src="script.js"></script>
+</body>
+</html>
