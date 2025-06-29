@@ -1,5 +1,3 @@
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyD_TBfmoZaYVGTQtblDMsUsNi_odpQKfQ4",
   authDomain: "woodle-3eaa5.firebaseapp.com",
@@ -11,9 +9,9 @@ const firebaseConfig = {
   measurementId: "G-Z15B7QPMYV"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 
 const playerId = Math.random().toString(36).substring(2, 8); // Unique player ID
 document.getElementById("gameInfo").innerText = `Your ID: ${playerId}`;
