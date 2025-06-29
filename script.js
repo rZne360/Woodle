@@ -1,16 +1,19 @@
-// ✅ Replace this with your Firebase config
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "your-app.firebaseapp.com",
-  projectId: "your-app",
-  storageBucket: "your-app.appspot.com",
-  messagingSenderId: "12345",
-  appId: "1:12345:web:abcd",
-  databaseURL: "https://your-app.firebaseio.com"
+  apiKey: "AIzaSyD_TBfmoZaYVGTQtblDMsUsNi_odpQKfQ4",
+  authDomain: "woodle-3eaa5.firebaseapp.com",
+  databaseURL: "https://woodle-3eaa5-default-rtdb.firebaseio.com",
+  projectId: "woodle-3eaa5",
+  storageBucket: "woodle-3eaa5.firebasestorage.app",
+  messagingSenderId: "1058533729670",
+  appId: "1:1058533729670:web:d3275a6d307f97313ff807",
+  measurementId: "G-Z15B7QPMYV"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
 const playerId = Math.random().toString(36).substring(2, 8); // Unique player ID
 document.getElementById("gameInfo").innerText = `Your ID: ${playerId}`;
