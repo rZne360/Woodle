@@ -9,13 +9,27 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const playerId = Math.random().toString(36).substring(2, 8);
+
+// Username
+const username = prompt("Enter your username:") || "player";
+let playerId = username + "_" + Math.floor(Math.random() * 1000);
 let targetWord = "";
 let currentRow = 0;
 let currentGuess = "";
+let winnerDeclared = false;
+
+// Word list for validation
+const wordList = ["CRANE", "PLANE", "BRING", "STACK", "GHOST", "MOUSE", "TIGER", "ZEBRA", "HEART", "SHARE"];
+const todayIndex = new Date().getDate() % wordList.length;
+const wordOfTheDay = wordList[todayIndex];
+db.ref("game/word").set(wordOfTheDay);
+
+// DOM
 const board = document.getElementById("gameBoard");
 const status = document.getElementById("status");
-// Create grid
+const resetBtn = document.getElementById("resetBtn");
+
+// Create Grid
 for (let r = 0; r < 6; r++) {
   const row = document.createElement("div");
   row.classList.add("row");
@@ -28,7 +42,8 @@ for (let r = 0; r < 6; r++) {
   }
   board.appendChild(row);
 }
-// Get word from Firebase
+
+// Get word and winner
 db.ref("game/word").on("value", snap => {
   targetWord = (snap.val() || "").toUpperCase();
 });
@@ -36,14 +51,30 @@ db.ref("game/winner").on("value", snap => {
   const winner = snap.val();
   if (winner && winner !== playerId) {
     status.textContent = `❌ You lost! Winner: ${winner}`;
+    winnerDeclared = true;
   } else if (winner === playerId) {
     status.textContent = `🎉 You WON!`;
+    winnerDeclared = true;
   }
 });
+
+// Reset
+resetBtn.addEventListener("click", () => {
+  db.ref("game").set(null);
+  location.reload();
+});
+
+// Keyboard
 document.addEventListener("keydown", e => {
-  if (status.textContent.includes("won") || status.textContent.includes("lost")) return;
+  if (winnerDeclared || currentRow >= 6) return;
   if (e.key === "Enter") {
-    if (currentGuess.length === 5) checkGuess(currentGuess.toUpperCase());
+    if (currentGuess.length === 5) {
+      if (!wordList.includes(currentGuess.toUpperCase())) {
+        alert("❌ Not a valid word!");
+        return;
+      }
+      checkGuess(currentGuess.toUpperCase());
+    }
   } else if (e.key === "Backspace") {
     if (currentGuess.length > 0) {
       currentGuess = currentGuess.slice(0, -1);
@@ -56,15 +87,18 @@ document.addEventListener("keydown", e => {
     }
   }
 });
+
 function updateRow() {
   for (let i = 0; i < 5; i++) {
     const tile = document.getElementById(`row-${currentRow}-col-${i}`);
     tile.textContent = currentGuess[i] || "";
   }
 }
+
 function checkGuess(guess) {
   const letters = targetWord.split("");
   const guessLetters = guess.split("");
+
   for (let i = 0; i < 5; i++) {
     const tile = document.getElementById(`row-${currentRow}-col-${i}`);
     if (guess[i] === targetWord[i]) {
@@ -73,6 +107,7 @@ function checkGuess(guess) {
       guessLetters[i] = null;
     }
   }
+
   for (let i = 0; i < 5; i++) {
     const tile = document.getElementById(`row-${currentRow}-col-${i}`);
     if (!tile.classList.contains("correct")) {
@@ -84,15 +119,18 @@ function checkGuess(guess) {
       }
     }
   }
+
   if (guess === targetWord) {
     db.ref("game/winner").once("value", snap => {
       if (!snap.exists()) db.ref("game/winner").set(playerId);
     });
     return;
   }
+
   currentRow++;
   currentGuess = "";
+
   if (currentRow >= 6) {
-    status.textContent = `💀 You ran out of tries! Word was: ${targetWord}`;
+    status.textContent = `💀 Out of tries! Word was: ${targetWord}`;
   }
 }
